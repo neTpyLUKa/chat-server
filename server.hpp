@@ -28,7 +28,9 @@ private:
        
     std::mutex write_mutex_;
     
-    std::unordered_map<Session*, int> sessions_;
+    std::unordered_map<int, std::weak_ptr<Session>> sessions_;
 
     int id_ = 0;
+
+    std::mutex clear_mutex_;
 };

@@ -17,31 +17,26 @@ void Server::Start() {
 }
 
 void Server::Send(MsgData msg, Session* exclude) {
-    static std::vector<Session*> to_rm;
+    static std::vector<int> to_rm;
  
-    BOOST_LOG_TRIVIAL(debug) << "Sending...";
-
-    std::vector<std::weak_ptr<Session>> v;
-
     {
-        std::lock_guard<std::mutex> lock(write_mutex_);
-        for (auto p : to_rm) {
-            sessions_.erase(p);
+        std::lock_guard<std::mutex> guard(clear_mutex_);
+        for (int id : to_rm) {
+            sessions_.erase(id);
         }
-        v.reserve(sessions_.size());
-        for(auto& [p, id] : sessions_) {
-            if (p != exclude) {
-                v.emplace_back(p->weak_from_this());
-            }
-        }
+        to_rm.clear();
     }
 
-    for(auto const& wp : v) {
+    BOOST_LOG_TRIVIAL(debug) << "Sending...";
+    
+    for(auto const& [id, wp] : sessions_) {
         if (auto sp = wp.lock()) {
-            BOOST_LOG_TRIVIAL(debug) << "Send called";
-            sp->SendToClient(msg);
+            if (sp.get() != exclude) {
+                BOOST_LOG_TRIVIAL(debug) << "Send called, id = " << id;
+                sp->SendToClient(msg);
+            }
         } else {
-            to_rm.push_back(sp.get());
+            to_rm.push_back(id);
         }
     }
 }
@@ -59,7 +54,7 @@ void Server::Accept() {
 }
 
 void Server::HandleNewConnection(session_ptr client) {
-    sessions_[client.get()] = id_++;
+    sessions_[id_++] = std::weak_ptr<Session>(client);
     client->Start();
     Accept();
 }

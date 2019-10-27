@@ -3,6 +3,7 @@
 #include <string>
 
 #include "arg_parser.hpp"
+#include "boost.hpp"
 
 namespace po = boost::program_options;
 
@@ -32,5 +33,6 @@ ArgData ParseArgs(int argc, char* argv[]) {
         std::cout << desc;
         exit(1);
     }
+    BOOST_LOG_TRIVIAL(debug) << "Args: port = " << data.port << ", n_threads = " << data.n_threads << " , port = " << data.port;
     return data;
 }

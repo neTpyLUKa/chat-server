@@ -14,20 +14,16 @@ class SocketWriter {
 public:
     SocketWriter(beast::tcp_stream& stream);
 
-    void SetSession(session_ptr session);
-
     void Push(MsgData data);
 
 private:
     void Write();
 
-    void OnWrite(const error_code& ec, size_t bytes);
+    void OnWrite(error_code ec, size_t bytes);
 
     bool is_writing_ = false;
 
     beast::tcp_stream& stream_;
-
-    session_ptr session_;
 
     std::queue<MsgData> q_;
 

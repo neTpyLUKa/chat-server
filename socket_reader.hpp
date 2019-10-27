@@ -5,6 +5,8 @@
 
 #include "boost.hpp"
 
+const int BUF_SIZE = 10000;
+
 class Session;
 
 using session_ptr = std::shared_ptr<Session>;
@@ -26,5 +28,5 @@ private:
 
     session_ptr session_;
 
-    beast::flat_buffer buffer_;
+    streambuf buffer_;
 };

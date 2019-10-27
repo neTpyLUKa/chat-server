@@ -22,8 +22,6 @@ public:
 
     tcp::socket& Socket();
 
-    void Erase();
-
 private:
     beast::tcp_stream stream_;
 

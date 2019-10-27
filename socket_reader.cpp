@@ -16,19 +16,19 @@ void SocketReader::Start() {
 }
 
 void SocketReader::Read() {
-    BOOST_LOG_TRIVIAL(debug) << buffer_.max_size() << ' ' << buffer_.capacity();
-    async_read(stream_, buffer_, transfer_exactly(5), [&](const error_code& ec, size_t bytes) {
+    async_read_until(stream_.socket(), buffer_, '\n', [&](const error_code& ec, size_t bytes) {
         if (ec) {
             BOOST_LOG_TRIVIAL(error) << "Error reading from socket";
-            session_->Erase();
+            session_ = nullptr;
             return;
         }
-        BOOST_LOG_TRIVIAL(debug) << "msg read, msg: " << beast::buffers_to_string(buffer_.data());
+        BOOST_LOG_TRIVIAL(debug) << "Message of " << bytes << " size read";
         OnRead();
     });
 }
 
 void SocketReader::OnRead() {
     session_->SendToServer(std::make_shared<std::string>(beast::buffers_to_string(buffer_.data())));
+    buffer_.consume(buffer_.size());
     Read();
 }
