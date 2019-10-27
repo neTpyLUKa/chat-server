@@ -2,7 +2,7 @@ Simple polylogue chat server. Messages sent via tcp protocol.
 
 Here I implement it using boost beast tcp streams
 
-Clients can connect simply with "nc <ip-address> <port>"
+Clients can connect simply with "nc ip-address port"
 
 There are 3 options:
 PING - estimate delay beetween client and server
