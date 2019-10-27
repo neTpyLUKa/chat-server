@@ -1,4 +1,4 @@
-Simple polylogue chat server. Messages sent via tcp protocol.
+Multi-threaded asynchronous polylogue chat server. Messages sent via tcp protocol.
 
 Here I implement it using boost beast tcp streams
 
